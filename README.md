@@ -1,4 +1,4 @@
-# IP (Internet Programming) Repository 🚀
+# IP (Industry Practise) Repository 🚀
 
 A comprehensive full-stack web application designed to demonstrate robust backend architecture and dynamic frontend rendering. This project encompasses core web development principles, RESTful API integrations, and modern UI/UX design.
 
