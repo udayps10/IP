@@ -1,35 +1,126 @@
-# IP (Industry Practise) Repository 🚀
+# IP (Industry Practice) – Real Estate Property Listing System
 
-A comprehensive full-stack web application designed to demonstrate robust backend architecture and dynamic frontend rendering. This project encompasses core web development principles, RESTful API integrations, and modern UI/UX design.
+A full-stack real estate listing app where users can browse, search and list properties with photos. The backend is a layered Spring Boot REST API (MySQL for data, MinIO for property images, JWT for auth) and the frontend consumes it.
 
-## ✨ Core Features
+## Repository Structure
 
-* **Secure User Authentication:** Role-based access control and secure session management.
-* **Dynamic Data Rendering:** Real-time data fetching and state management for a seamless user experience.
-* **RESTful API Integration:** Scalable backend endpoints handling CRUD operations and business logic.
-* **Responsive UI Design:** Fully responsive layouts optimized for desktop, tablet, and mobile viewing using utility-first styling.
-* **Database Management:** Optimized relational database schemas for efficient data storage and retrieval.
+```
+IP/
+├── realestatepropertylistingsystem/   # Spring Boot backend (REST API)
+├── frontend/                          # Frontend client
+├── .gitignore
+└── README.md
+```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-* **Frontend:** Next.js, TypeScript, Tailwind CSS
-* **Backend:** Java, Spring Boot, Node.js (Express)
-* **Database:** MySQL
-* **Tools:** Visual Studio Code, Git, Figma (UI prototyping)
+| Layer     | Technology                                              |
+|-----------|---------------------------------------------------------|
+| Backend   | Java 17, Spring Boot 3, Spring Data JPA, Spring Security (JWT) |
+| Database  | MySQL                                                   |
+| Storage   | MinIO (S3-compatible object storage for property photos)|
+| Frontend  | See `frontend/` (Node.js + npm)                         |
+| Tools     | Git, IntelliJ IDEA, Maven                               |
 
-## 🚀 Getting Started
+## Backend Architecture
+
+Standard layered design:
+
+- **Entities** – JPA models mapped to MySQL tables
+- **Repositories** – Spring Data JPA interfaces
+- **Services** – business logic
+- **DTOs** – request/response objects (entities are never returned directly)
+- **Controllers** – REST endpoints
+- **Security** – JWT-based login and request authorization
+
+Base package: `com.example.realestatepropertylistingsystem`
+
+## Features
+
+- User registration and JWT login
+- Create, read, update and delete property listings
+- Property photo upload and storage via MinIO
+- DTO-based API responses
+- Relational schema managed through JPA/Hibernate
+
+## Getting Started
 
 ### Prerequisites
 
-Ensure you have the following installed on your local development environment:
-* Java Development Kit (JDK 17+)
-* Node.js (v18+)
-* MySQL Server
-* Git
+- JDK 17+
+- Maven (or use the included `mvnw` wrapper)
+- MySQL 8+
+- MinIO server
+- Node.js 18+ and npm (for the frontend)
+- Git
 
-### Installation & Setup
+### 1. Clone the repository
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/udayps10/IP.git](https://github.com/udayps10/IP.git)
-   cd IP
+```bash
+git clone https://github.com/udayps10/IP.git
+cd IP
+```
+
+### 2. Set up MySQL
+
+```sql
+CREATE DATABASE realestate_db;
+```
+
+### 3. Start MinIO
+
+```bash
+docker run -d --name minio \
+  -p 9000:9000 -p 9001:9001 \
+  -e MINIO_ROOT_USER=minioadmin \
+  -e MINIO_ROOT_PASSWORD=minioadmin \
+  quay.io/minio/minio server /data --console-address ":9001"
+```
+
+Open `http://localhost:9001` and create a bucket for property photos (e.g. `property-photos`).
+
+### 4. Configure the backend
+
+Edit `realestatepropertylistingsystem/src/main/resources/application.properties`:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/realestate_db
+spring.datasource.username=YOUR_DB_USER
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.jpa.hibernate.ddl-auto=update
+
+minio.url=http://localhost:9000
+minio.access-key=minioadmin
+minio.secret-key=minioadmin
+minio.bucket=property-photos
+
+jwt.secret=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+```
+
+> Match the property names above to the ones actually used in your code. Never commit real credentials.
+
+### 5. Run the backend
+
+```bash
+cd realestatepropertylistingsystem
+./mvnw spring-boot:run
+```
+
+The API starts on `http://localhost:8080`.
+
+### 6. Run the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Environment Notes
+
+- Keep secrets (DB password, JWT secret, MinIO keys) out of Git; use environment variables or a local, git-ignored config.
+- `ddl-auto=update` is for development only.
+
+## Author
+
+**Udaypratap** – [@udayps10](https://github.com/udayps10)
